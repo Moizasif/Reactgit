@@ -10,15 +10,49 @@ Fetch Dishes is going tobe the thunk here beacuase it return a function
 settime out fuction gives dealy of 2000 milisec
 and this thunk is doing 2 dispatches*/
 
-export const addComment = (dishId , rating , author, comment) =>({
+export const addComment = (comment) =>({
       type: ActionTypes.ADD_COMMENT,
-      payload: {
-            dishId: dishId,
-            rating: rating,
-            author: author,
-            comment: comment
-      }
+      payload: comment
 });
+
+export const postComment = (dishId , rating , author, comment) => (dispatch) => {
+
+    const newComment = {
+          dishId: dishId,
+          rating: rating,
+          author: author,
+          comment: comment
+    }
+    newComment.date = new Date().toISOString();
+
+    return fetch(baseUrl + 'comments', {
+          method: 'POST',
+          body: JSON.stringify(newComment),
+          headers: {
+                'Content-Type': 'application/json'
+          },
+          credentials: 'same-origin'
+    })
+    .then(response => {
+      if(response.ok){
+            return response;
+      }
+      else{
+            var error = new Error('Error' + response.status + ': ' + response.statusText)
+            error.response = response;
+            throw error;
+      }
+},
+    /*This second part where you dont hear anything back from the server*/
+     error => {
+        var errmess = new Error(error.message);
+        throw errmess;
+        })
+       .then(response => response.json())
+       .then(response => dispatch(addComment(response)))
+       .catch(error => { console.log('Post comments', error.message);
+       alert('your comment could not be posted\nError: '+ error.message); })
+}
 
 export const fetchDishes = () => (dispatch) => {
       dispatch(dishesLoading(true));
