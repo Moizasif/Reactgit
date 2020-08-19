@@ -10,6 +10,7 @@ import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { postComment, fetchDishes, fetchComments, fetchPromos } from '../redux/ActionCreators'
 import { actions } from 'react-redux-form';
+import { TransitionGroup, CSSTransition, Transition } from 'react-transition-group';
 /* mapDispatchToProps is a function that will return and it will take 4 params and it will dispatch
 the addComment action creator needs to be passed these 4 params values*/
 
@@ -77,6 +78,8 @@ class Main extends Component {
       <div>
           
          <Header />
+         <TransitionGroup>
+           <CSSTransition key={this.props.location.key} classNames="page" timeout={300}>
          <Switch>
            <Route path="/home" component={HomePage} />
            <Route exact path="/menu" component={() => <Menu dishes={this.props.dishes} />} />
@@ -85,6 +88,8 @@ class Main extends Component {
            <Route exact path="/aboutus" component={() => <About leaders={this.props.leaders} />} />
            <Redirect to="/home" />
          </Switch>
+         </CSSTransition>
+         </TransitionGroup>
         <Footer />
       </div>
     );
